@@ -2,10 +2,12 @@
   #app
     img(src='./assets/logo.png')
     h1 PlatziMusic
+    select(v-model="selectedCountry")
+      option(v-for="country in countries" v-bind:value="country.value") {{country.name}}
     ul
-      artist(v-for="artist in artists"
+      artist(v-for="artist in artists" 
       v-bind:artist="artist" v-bind:key="artist.mbid")
-    
+    h2 help
 </template>
 
 <script>
@@ -15,20 +17,41 @@ export default {
   name: 'app',
   data () {
     return {
-      artists: []
+      artists: [],
+      countries: [
+        {name: "Argentina", value: "argentina"},
+        {name: "Colombia", value: "colombia"},
+        {name: "España", value: "spain"},
+
+      ],
+      selectedCountry: "argentina",
     }
   },
   components: {
     Artist
   },
-
-  mounted: function(){ ///ejecutar metodo cuando el elemento fue montado en el DOM
-    const self = this // de esta forma evitamos que el this apunte al objeto global
-    getArtists()
-      .then(function (artists){
-        self.artists = artists
+  methods: {
+    refreshArtists(){
+      const self = this // de esta forma evitamos que el this apunte al objeto global
+      console.log("refrescaremos el valor")
+      getArtists(this.selectedCountry)
+       .then(function (artists){
+         self.artists = artists
       })
-  }
+    }
+  }, 
+
+  mounted: function() {  ///ejecutar metodo cuando el elemento fue montado en el DOM
+   console.log("el componente se ha montado")
+   this.refreshArtists();
+  },
+
+  watch: {  //con este objeto se establece los eventos a los que se quiere estar escuchando
+    selectedCountry (){ //ejecutar una funcion cuando ocurra un cambio en selectedCountry
+   this.refreshArtists();
+   console.log("cambio un valor del value")
+    }
+  } 
 }
 </script>
 
